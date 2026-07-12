@@ -1,0 +1,24 @@
+{
+  "test-004": {
+    "lead_id": "test-004",
+    "company_size_large": true,
+    "company_size_medium": false,
+    "company_size_small": false,
+    "budget_mentioned": true,
+    "urgent_language": true,
+    "decision_maker_title": true,
+    "generic_inquiry": false,
+    "competitor_mention": false
+  },
+  "test-005": {
+    "lead_id": "test-005",
+    "company_size_large": true,
+    "company_size_medium": false,
+    "company_size_small": false,
+    "budget_mentioned": true,
+    "urgent_language": true,
+    "decision_maker_title": true,
+    "generic_inquiry": false,
+    "competitor_mention": false
+  }
+}

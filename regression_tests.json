@@ -1,0 +1,89 @@
+[
+  {
+    "name": "clear_hot_enterprise_buyer",
+    "features": {
+      "lead_id": "reg-001",
+      "company_size_large": true,
+      "budget_mentioned": true,
+      "decision_maker_title": true,
+      "urgent_language": true
+    },
+    "expected_label": "hot"
+  },
+  {
+    "name": "warm_mid_size_interested",
+    "features": {
+      "lead_id": "reg-002",
+      "company_size_medium": true,
+      "budget_mentioned": true
+    },
+    "expected_label": "warm"
+  },
+  {
+    "name": "cold_generic_inquiry",
+    "features": {
+      "lead_id": "reg-003",
+      "company_size_small": true,
+      "generic_inquiry": true
+    },
+    "expected_label": "cold"
+  },
+  {
+    "name": "cold_no_signals",
+    "features": {
+      "lead_id": "reg-004"
+    },
+    "expected_label": "cold"
+  },
+  {
+    "name": "hot_competitor_switcher",
+    "features": {
+      "lead_id": "reg-005",
+      "company_size_large": true,
+      "competitor_mention": true,
+      "decision_maker_title": true,
+      "urgent_language": true
+    },
+    "expected_label": "hot"
+  },
+  {
+    "name": "warm_small_but_urgent",
+    "features": {
+      "lead_id": "reg-006",
+      "company_size_small": true,
+      "urgent_language": true,
+      "decision_maker_title": true
+    },
+    "expected_label": "warm"
+  },
+  {
+    "name": "corrected_test-004",
+    "features": {
+      "lead_id": "test-004",
+      "company_size_large": true,
+      "company_size_medium": false,
+      "company_size_small": false,
+      "budget_mentioned": true,
+      "urgent_language": true,
+      "decision_maker_title": true,
+      "generic_inquiry": false,
+      "competitor_mention": false
+    },
+    "expected_label": "warm"
+  },
+  {
+    "name": "corrected_test-005",
+    "features": {
+      "lead_id": "test-005",
+      "company_size_large": true,
+      "company_size_medium": false,
+      "company_size_small": false,
+      "budget_mentioned": true,
+      "urgent_language": true,
+      "decision_maker_title": true,
+      "generic_inquiry": false,
+      "competitor_mention": false
+    },
+    "expected_label": "warm"
+  }
+]

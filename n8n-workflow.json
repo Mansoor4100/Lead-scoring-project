@@ -1,0 +1,134 @@
+{
+  "name": "Lead Qualification - Self-Healing Scoring",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lead-intake",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-intake",
+      "name": "Lead Intake Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [-800, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SCORING_API_URL }}/score",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.body) }}",
+        "options": {}
+      },
+      "id": "http-score",
+      "name": "Score Lead",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-560, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SCORING_API_URL }}/leads/{{ $json.lead_id }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($('Lead Intake Webhook').item.json.body) }}",
+        "options": {}
+      },
+      "id": "http-save-lead",
+      "name": "Save Lead Features",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-320, 0]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "post",
+        "select": "channel",
+        "channelId": "={{ $env.SALES_SLACK_CHANNEL_ID }}",
+        "messageType": "block",
+        "blocksUi": "={\n  \"blocks\": [\n    {\n      \"type\": \"section\",\n      \"text\": { \"type\": \"mrkdwn\", \"text\": \"*New lead:* {{ $('Lead Intake Webhook').item.json.body.name }} ({{ $('Lead Intake Webhook').item.json.body.company }})\\n*Score:* {{ $json.score }} -> *{{ $json.label }}*\\n*Reasons:* {{ $json.reasons.join(', ') }}\" }\n    },\n    {\n      \"type\": \"actions\",\n      \"elements\": [\n        { \"type\": \"button\", \"text\": { \"type\": \"plain_text\", \"text\": \"Flag: should be HOT\" }, \"url\": \"{{ $env.N8N_BASE_URL }}/webhook/lead-feedback?lead_id={{ $json.lead_id }}&correct_label=hot\" },\n        { \"type\": \"button\", \"text\": { \"type\": \"plain_text\", \"text\": \"Flag: should be WARM\" }, \"url\": \"{{ $env.N8N_BASE_URL }}/webhook/lead-feedback?lead_id={{ $json.lead_id }}&correct_label=warm\" },\n        { \"type\": \"button\", \"text\": { \"type\": \"plain_text\", \"text\": \"Flag: should be COLD\" }, \"url\": \"{{ $env.N8N_BASE_URL }}/webhook/lead-feedback?lead_id={{ $json.lead_id }}&correct_label=cold\" }\n      ]\n    }\n  ]\n}",
+        "otherOptions": {}
+      },
+      "id": "slack-review",
+      "name": "Post to Slack for Review",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.2,
+      "position": [-80, 0]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}"
+      },
+      "id": "respond-intake",
+      "name": "Respond (Intake)",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [160, 0]
+    },
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "lead-feedback",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-feedback",
+      "name": "Lead Feedback Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [-800, 260]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SCORING_API_URL }}/trigger-patch",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ lead_id: $('Lead Feedback Webhook').item.json.query.lead_id, correct_label: $('Lead Feedback Webhook').item.json.query.correct_label }) }}",
+        "options": { "timeout": 600000 }
+      },
+      "id": "http-patch",
+      "name": "Run Patch + Regression Gate",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-320, 260]
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "=Thanks — feedback logged for lead {{ $('Lead Feedback Webhook').item.json.query.lead_id }}. The patch is running in the background — check the uvicorn terminal window on your laptop in about a minute for the result (DEPLOYED or NEEDS_REVIEW)."
+      },
+      "id": "respond-feedback",
+      "name": "Respond (Feedback)",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [-80, 260]
+    }
+  ],
+  "connections": {
+    "Lead Intake Webhook": {
+      "main": [[{ "node": "Score Lead", "type": "main", "index": 0 }]]
+    },
+    "Score Lead": {
+      "main": [[{ "node": "Save Lead Features", "type": "main", "index": 0 }]]
+    },
+    "Save Lead Features": {
+      "main": [[{ "node": "Post to Slack for Review", "type": "main", "index": 0 }]]
+    },
+    "Post to Slack for Review": {
+      "main": [[{ "node": "Respond (Intake)", "type": "main", "index": 0 }]]
+    },
+    "Lead Feedback Webhook": {
+      "main": [[{ "node": "Run Patch + Regression Gate", "type": "main", "index": 0 }]]
+    },
+    "Run Patch + Regression Gate": {
+      "main": [[{ "node": "Respond (Feedback)", "type": "main", "index": 0 }]]
+    }
+  }
+}
