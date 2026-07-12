@@ -23,6 +23,11 @@ THRESHOLDS = {
     "warm": 30,
 }
 
+# Narrow combo bonus: a decision-maker expressing urgency is nearly as
+# strong a buying signal as an explicit budget mention.  Applied only when
+# BOTH urgent_language and decision_maker_title are true.
+URGENT_DECISION_MAKER_BONUS: float = 12
+
 
 def score_lead(features: dict) -> dict:
     """
@@ -38,6 +43,12 @@ def score_lead(features: dict) -> dict:
             score += weight
             sign = "+" if weight > 0 else ""
             reasons.append(f"{key} ({sign}{weight})")
+
+    # Apply combo bonus for urgency + decision-maker (strong buying signal
+    # even without an explicit budget mention).
+    if features.get("urgent_language") and features.get("decision_maker_title"):
+        score += URGENT_DECISION_MAKER_BONUS
+        reasons.append(f"urgent_language+decision_maker_title combo (+{URGENT_DECISION_MAKER_BONUS})")
 
     if score >= THRESHOLDS["hot"]:
         label = "hot"

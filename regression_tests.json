@@ -57,33 +57,33 @@
     "expected_label": "warm"
   },
   {
-    "name": "corrected_test-004",
+    "name": "corrected_test-006",
     "features": {
-      "lead_id": "test-004",
-      "company_size_large": true,
-      "company_size_medium": false,
+      "lead_id": "test-006",
+      "company_size_large": false,
+      "company_size_medium": true,
       "company_size_small": false,
-      "budget_mentioned": true,
+      "budget_mentioned": false,
       "urgent_language": true,
       "decision_maker_title": true,
       "generic_inquiry": false,
       "competitor_mention": false
     },
-    "expected_label": "warm"
+    "expected_label": "hot"
   },
   {
-    "name": "corrected_test-005",
+    "name": "corrected_test-006",
     "features": {
-      "lead_id": "test-005",
-      "company_size_large": true,
-      "company_size_medium": false,
+      "lead_id": "test-006",
+      "company_size_large": false,
+      "company_size_medium": true,
       "company_size_small": false,
-      "budget_mentioned": true,
+      "budget_mentioned": false,
       "urgent_language": true,
       "decision_maker_title": true,
       "generic_inquiry": false,
       "competitor_mention": false
     },
-    "expected_label": "warm"
+    "expected_label": "hot"
   }
 ]
