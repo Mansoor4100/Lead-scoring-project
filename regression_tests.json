@@ -87,9 +87,9 @@
     "expected_label": "hot"
   },
   {
-    "name": "corrected_test-007",
+    "name": "corrected_test-006",
     "features": {
-      "lead_id": "test-007",
+      "lead_id": "test-006",
       "company_size_large": false,
       "company_size_medium": true,
       "company_size_small": false,

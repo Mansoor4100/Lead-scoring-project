@@ -23,8 +23,9 @@ safety gate so a bad patch can't quietly make things worse.
 - `run_regression.py` — exits non-zero if any labeled case fails.
 - `append_regression_case.py` — adds a newly corrected lead to the suite.
 - `antigravity_patch_prompt_template.md` — keeps Antigravity's edits narrow.
-- `scripts/patch_trigger.sh` — the full loop: log correction, ask
-  Antigravity to patch, run regression tests, deploy or revert.
+- `scripts/patch_trigger.py` — the full loop: log correction, ask
+  Antigravity to patch, run regression tests, deploy or revert. Pure
+  Python — no bash/WSL dependency, so it runs natively on Windows too.
 - `n8n-workflow.json` — import into n8n. Two webhook paths: `/lead-intake`
   and `/lead-feedback`.
 
@@ -117,6 +118,8 @@ all of that today.
   This is why patches are gated, not auto-trusted.
 - `git checkout` revert on failure requires the folder to actually be a
   git repo — don't skip `git init` in setup.
-- This demo uses `agy -p` for a single one-shot patch; check `agy --help`
-  on your installed version, since CLI flags on fast-moving tools like
-  this can change between releases.
+- `agy -p` is a one-shot patch call; check `agy --help` on your installed
+  version, since CLI flags on fast-moving tools like this can change
+  between releases.
+- The patch trigger is pure Python (`scripts/patch_trigger.py`), not a
+  shell script — this avoids needing bash or WSL on Windows.
