@@ -19,6 +19,9 @@ import subprocess
 import sys
 import urllib.request
 
+sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE_DIR)
 
@@ -60,10 +63,12 @@ def main():
     print("== 3. Running Antigravity to propose a patch ==")
     try:
         agy_result = subprocess.run(
-            ["agy", "-p", prompt, "--output-format", "json"],
+            ["agy", "-p", prompt, "--model", "claude-sonnet-4-6", "--output-format", "json"],
             cwd=BASE_DIR,
             capture_output=True,
             text=True,
+            encoding="utf-8",
+    	    errors="replace",
             timeout=300,
         )
     except FileNotFoundError:

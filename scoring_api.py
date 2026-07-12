@@ -109,13 +109,20 @@ def trigger_patch(req: PatchRequest):
     script_path = os.path.join(base_dir, "scripts", "patch_trigger.py")
     log_path = os.path.join(base_dir, f"patch_log_{req.lead_id}.txt")
 
-    with open(log_path, "w") as log_file:
+    popen_kwargs = {}
+    if sys.platform == "win32":
+        popen_kwargs["creationflags"] = subprocess.CREATE_NEW_PROCESS_GROUP
+
+    with open(log_path, "w", encoding="utf-8", errors="replace") as log_file:
         subprocess.Popen(
             [sys.executable, script_path, req.lead_id, req.correct_label],
             cwd=base_dir,
             stdout=log_file,
             stderr=subprocess.STDOUT,
+            **popen_kwargs,
         )
+
+    
 
     return {
         "lead_id": req.lead_id,
@@ -133,7 +140,7 @@ def patch_log(lead_id: str):
     log_path = os.path.join(base_dir, f"patch_log_{lead_id}.txt")
     if not os.path.exists(log_path):
         raise HTTPException(status_code=404, detail="no patch log for this lead yet")
-    with open(log_path) as f:
+    with open(log_path, encoding="utf-8", errors="replace") as f:
         content = f.read()
     finished = "RESULT: DEPLOYED" in content or "RESULT: NEEDS_REVIEW" in content
     return {"lead_id": lead_id, "finished": finished, "log": content}

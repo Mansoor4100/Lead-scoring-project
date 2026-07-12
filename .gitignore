@@ -1,0 +1,4 @@
+leads_store.json
+patch_log_*.txt
+__pycache__/
+*.pyc
